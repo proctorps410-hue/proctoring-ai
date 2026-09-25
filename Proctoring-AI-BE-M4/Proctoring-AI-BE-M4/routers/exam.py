@@ -34,7 +34,6 @@ from fastapi import Request
 from services.storage_service import StorageService
 from models.evidence import Evidence
 from utils.time_utils import as_utc, to_naive_utc, utc_iso
-import pandas as pd
 import bcrypt
 import io
 import csv

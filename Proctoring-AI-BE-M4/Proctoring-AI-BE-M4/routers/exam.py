@@ -37,6 +37,7 @@ from utils.time_utils import as_utc, to_naive_utc, utc_iso
 import bcrypt
 import io
 import csv
+import re
 
 from services.warmup_service import WarmupService
 router = APIRouter()
@@ -195,53 +196,37 @@ def _is_user_eligible_for_exam(db: Session, user: User, exam: Exam) -> bool:
     return _normalize_email(user.email) in set(eligible_emails)
 
 
-def _parse_eligible_email_file(filename: str, file_bytes: bytes) -> List[str]:
-    """Parse a .csv or .xlsx roster file and return a list of valid email addresses.
+EMAIL_REGEX = re.compile(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}')
 
-    Uses stdlib csv + openpyxl directly to avoid numpy/pandas version conflicts.
+
+def _parse_eligible_email_file(filename: str, file_bytes: bytes) -> List[str]:
+    """Parse a .csv, .xlsx, or .txt roster file and return a list of valid email addresses.
+
+    Extracts all valid email patterns from cell contents and raw text.
     """
     lower_name = (filename or "").strip().lower()
+    text_content = ""
 
-    if lower_name.endswith(".csv"):
-        raw_rows: List[List[str]] = []
-        text = file_bytes.decode("utf-8-sig", errors="replace")  # handle BOM
-        reader = csv.reader(io.StringIO(text))
-        for row in reader:
-            raw_rows.append([cell.strip() for cell in row])
-
-    elif lower_name.endswith(".xlsx"):
-        import openpyxl  # already in requirements; imported here to keep top-level imports clean
-        wb = openpyxl.load_workbook(io.BytesIO(file_bytes), read_only=True, data_only=True)
-        ws = wb.active
-        raw_rows = []
-        for row in ws.iter_rows(values_only=True):
-            raw_rows.append([str(cell).strip() if cell is not None else "" for cell in row])
-        wb.close()
-
+    if lower_name.endswith(".xlsx") or lower_name.endswith(".xls"):
+        try:
+            import openpyxl
+            wb = openpyxl.load_workbook(io.BytesIO(file_bytes), data_only=True)
+            ws = wb.active
+            cells = []
+            for row in ws.iter_rows(values_only=True):
+                cells.extend([str(c) for c in row if c is not None])
+            text_content = " ".join(cells)
+            wb.close()
+        except Exception as e:
+            logger.warning(f"openpyxl failed to parse {filename}: {e}. Falling back to text extraction.")
+            text_content = file_bytes.decode("utf-8-sig", errors="ignore")
     else:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Unsupported roster format. Upload a .csv or .xlsx file."
-        )
+        text_content = file_bytes.decode("utf-8-sig", errors="ignore")
 
-    if not raw_rows:
-        return []
-
-    # Use first row as header; find the email column
-    header = raw_rows[0]
-    email_col_idx = next(
-        (i for i, h in enumerate(header) if "email" in h.lower()),
-        0,  # default to first column if no "email" header found
-    )
-
-    email_candidates = [
-        row[email_col_idx].strip()
-        for row in raw_rows[1:]  # skip header row
-        if len(row) > email_col_idx and row[email_col_idx].strip()
-    ]
-
-    normalized = _normalize_email_list(email_candidates)
+    matches = EMAIL_REGEX.findall(text_content)
+    normalized = _normalize_email_list(matches)
     return [email for email in normalized if "@" in email and "." in email.split("@")[-1]]
+
 
 
 def _generate_shared_temporary_password() -> str:

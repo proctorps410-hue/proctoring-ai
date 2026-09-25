@@ -153,7 +153,8 @@ const Login = () => {
       });
       setLivenessChallengeId(challenge.challenge_id || '');
       setPoseOrder(Array.isArray(challenge.pose_order) ? challenge.pose_order : null);
-      setTimeout(() => setFaceOpen(true), 800);
+      setStep('idle');
+      setTimeout(() => setFaceOpen(true), 400);
     } catch (err) {
       setStep('idle');
       setError(err.message || 'Reset failed. Check your temporary password and try again.');
@@ -173,6 +174,7 @@ const Login = () => {
     }
 
     setFaceOpen(false);
+    setStep('done');
     setError('');
     try {
       await authService.loginWithPasswordAndFace({
@@ -182,8 +184,10 @@ const Login = () => {
         livenessChallengeId,
         imageFront: frontBlob,
       });
-      setStep('done');
-      setTimeout(() => navigate(examIdFromUrl ? `/exam/${examIdFromUrl}` : '/exam', { replace: true }), 200);
+      setLoginAttemptId('');
+      setLivenessChallengeId('');
+      setPoseOrder(null);
+      navigate(examIdFromUrl ? `/exam/${examIdFromUrl}` : '/exam', { replace: true });
     } catch (err) {
       setStep('idle');
       setLoginAttemptId('');

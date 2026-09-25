@@ -65,4 +65,4 @@ EXPOSE 8000
 # IMPORTANT: Multi-worker cold start + model warmup can trigger worker timeouts and cause
 # ERR_EMPTY_RESPONSE in the browser due to worker restarts. Default to 1 worker for stability.
 # You can scale via WEB_CONCURRENCY when running on a machine with enough CPU/RAM.
-CMD ["/bin/sh", "-c", "gunicorn -w ${WEB_CONCURRENCY:-1} --preload --timeout 300 --graceful-timeout 30 -k uvicorn.workers.UvicornWorker main:app --bind 0.0.0.0:8000"]
+CMD ["/bin/sh", "-c", "gunicorn -w ${WEB_CONCURRENCY:-1} --preload --timeout 300 --graceful-timeout 30 -k uvicorn.workers.UvicornWorker main:app --bind 0.0.0.0:${PORT:-8080}"]

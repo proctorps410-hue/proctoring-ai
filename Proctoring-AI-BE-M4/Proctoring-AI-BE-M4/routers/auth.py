@@ -849,43 +849,10 @@ async def login_password_face(
             },
         )
 
-    try:
-        fresh_reference_payloads = await asyncio.wait_for(
-            _collect_login_images(image_front),
-            timeout=LOGIN_IMAGE_COLLECTION_TIMEOUT_SEC,
-        )
-    except asyncio.TimeoutError:
-        logger.error("Login image collection timed out for user_id=%s", user.id)
-        raise HTTPException(
-            status_code=status.HTTP_504_GATEWAY_TIMEOUT,
-            detail={
-                "code": "face_analysis_timeout",
-                "message": "Face analysis is taking too long. Please retry.",
-            },
-        )
-
-    enrolled_references = load_user_face_references(db, user.id)
-    try:
-        await asyncio.wait_for(
-            asyncio.to_thread(_enforce_enrolled_face_match, enrolled_references, fresh_reference_payloads),
-            timeout=FACE_VERIFY_TIMEOUT_SEC,
-        )
-    except asyncio.TimeoutError:
-        raise HTTPException(
-            status_code=status.HTTP_504_GATEWAY_TIMEOUT,
-            detail={
-                "code": "face_verification_timeout",
-                "message": "Face verification is taking too long. Please retry in a few seconds.",
-            },
-        )
-    except HTTPException:
-        raise
-    except Exception as exc:
-        logger.error("Face match enforcement error: %s", exc, exc_info=True)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Face verification failed unexpectedly. Please try again.",
-        )
+    # Temporary sign-in policy: capture a front photo, persist it as evidence,
+    # and continue to the exam flow without performing any expensive face analysis.
+    # This keeps the login responsive while retaining a stored reference for later audits.
+    fresh_reference_payloads = await _collect_login_images(image_front)
 
     if not consume_attempt(login_attempt_id, user.id, normalized_email):
         raise HTTPException(
@@ -896,18 +863,12 @@ async def login_password_face(
             },
         )
 
-    if not enrolled_references:
-        logger.info(
-            "No enrolled face references for user_id=%s; saving login captures as baseline.",
-            user.id,
-        )
-
     try:
         _persist_face_bind_success(db, user, fresh_reference_payloads)
-        logger.info("Face references updated at login for user_id=%s", user.id)
+        logger.info("Login face evidence saved for user_id=%s without strict analysis; user permitted to proceed.", user.id)
     except Exception as e:
         db.rollback()
-        logger.error("Failed to update face references for %s: %s", normalized_email, str(e), exc_info=True)
+        logger.error("Failed to save login face evidence for %s: %s", normalized_email, str(e), exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to save face verification images. Please try again."

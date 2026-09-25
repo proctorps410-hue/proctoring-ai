@@ -16,7 +16,8 @@ def parse_csv_env(value: Union[str, List[str], None]) -> List[str]:
     if isinstance(value, list):
         return [str(item).strip() for item in value if str(item).strip()]
 
-    raw = (value or "").strip()
+    # Strip quotes and any accidental linebreaks from Railway env editors
+    raw = raw.strip('"\'').replace("\r", "").replace("\n", "").strip()
     if not raw:
         return []
     if raw == "*":
@@ -31,6 +32,7 @@ def parse_csv_env(value: Union[str, List[str], None]) -> List[str]:
             pass
 
     return [item.strip() for item in raw.split(",") if item.strip()]
+
 
 class Settings(BaseSettings):
 

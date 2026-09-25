@@ -74,13 +74,7 @@ EXPOSE 8000
 # Download YOLOv8n model weights using the ultralytics package (Git LFS not available
 # in Railway Docker builds, so COPY gives us a pointer file — replace with real weights)
 RUN rm -f /app/yolov8n.pt \
-    && python -c "\
-from ultralytics import YOLO; \
-import shutil, os; \
-m = YOLO('yolov8n.pt'); \
-src = getattr(m, 'ckpt_path', None) or str(m.model_name); \
-dst = '/app/yolov8n.pt'; \
-if os.path.abspath(src) != os.path.abspath(dst): shutil.copy(src, dst); \
-print('yolov8n.pt ready at', dst, os.path.getsize(dst), 'bytes')"
+    && python -c "from ultralytics import YOLO; YOLO('yolov8n.pt')"
+
 
 CMD ["/bin/sh", "-c", "gunicorn -w ${WEB_CONCURRENCY:-1} --preload --timeout 300 --graceful-timeout 30 -k uvicorn.workers.UvicornWorker main:app --bind 0.0.0.0:${PORT:-8080}"]

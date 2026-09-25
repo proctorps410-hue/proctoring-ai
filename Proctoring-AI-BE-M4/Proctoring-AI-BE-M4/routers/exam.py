@@ -198,9 +198,10 @@ def _is_user_eligible_for_exam(db: Session, user: User, exam: Exam) -> bool:
 def _parse_eligible_email_file(filename: str, file_bytes: bytes) -> List[str]:
     lower_name = (filename or "").strip().lower()
     if lower_name.endswith(".csv"):
-        dataframe = pd.read_csv(io.BytesIO(file_bytes), dtype=str)
+        # dtype=str causes numpy incompatibility on some pandas versions; cast after reading
+        dataframe = pd.read_csv(io.BytesIO(file_bytes), header=0)
     elif lower_name.endswith(".xlsx"):
-        dataframe = pd.read_excel(io.BytesIO(file_bytes), dtype=str, engine="openpyxl")
+        dataframe = pd.read_excel(io.BytesIO(file_bytes), engine="openpyxl", header=0)
     else:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

@@ -200,7 +200,7 @@ async def admin_live_websocket(
         return
 
     try:
-        current_user = await get_current_user_ws(token, db)
+        current_user, _ = await get_current_user_ws(token, db)
         if current_user.role != "admin":
             await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
             return

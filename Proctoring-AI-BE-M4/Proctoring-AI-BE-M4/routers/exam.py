@@ -37,6 +37,7 @@ from utils.time_utils import as_utc, to_naive_utc, utc_iso
 import pandas as pd
 import bcrypt
 import io
+import csv
 
 from services.warmup_service import WarmupService
 router = APIRouter()
@@ -196,28 +197,50 @@ def _is_user_eligible_for_exam(db: Session, user: User, exam: Exam) -> bool:
 
 
 def _parse_eligible_email_file(filename: str, file_bytes: bytes) -> List[str]:
+    """Parse a .csv or .xlsx roster file and return a list of valid email addresses.
+
+    Uses stdlib csv + openpyxl directly to avoid numpy/pandas version conflicts.
+    """
     lower_name = (filename or "").strip().lower()
+
     if lower_name.endswith(".csv"):
-        # dtype=str causes numpy incompatibility on some pandas versions; cast after reading
-        dataframe = pd.read_csv(io.BytesIO(file_bytes), header=0)
+        raw_rows: List[List[str]] = []
+        text = file_bytes.decode("utf-8-sig", errors="replace")  # handle BOM
+        reader = csv.reader(io.StringIO(text))
+        for row in reader:
+            raw_rows.append([cell.strip() for cell in row])
+
     elif lower_name.endswith(".xlsx"):
-        dataframe = pd.read_excel(io.BytesIO(file_bytes), engine="openpyxl", header=0)
+        import openpyxl  # already in requirements; imported here to keep top-level imports clean
+        wb = openpyxl.load_workbook(io.BytesIO(file_bytes), read_only=True, data_only=True)
+        ws = wb.active
+        raw_rows = []
+        for row in ws.iter_rows(values_only=True):
+            raw_rows.append([str(cell).strip() if cell is not None else "" for cell in row])
+        wb.close()
+
     else:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Unsupported roster format. Upload a .csv or .xlsx file."
         )
 
-    if dataframe.empty:
+    if not raw_rows:
         return []
 
-    columns = [str(column).strip() for column in dataframe.columns]
-    preferred_column = next(
-        (column for column in columns if "email" in column.lower()),
-        columns[0],
+    # Use first row as header; find the email column
+    header = raw_rows[0]
+    email_col_idx = next(
+        (i for i, h in enumerate(header) if "email" in h.lower()),
+        0,  # default to first column if no "email" header found
     )
-    series = dataframe[preferred_column].dropna().astype(str).tolist()
-    email_candidates = [item.strip() for item in series if item and str(item).strip()]
+
+    email_candidates = [
+        row[email_col_idx].strip()
+        for row in raw_rows[1:]  # skip header row
+        if len(row) > email_col_idx and row[email_col_idx].strip()
+    ]
+
     normalized = _normalize_email_list(email_candidates)
     return [email for email in normalized if "@" in email and "." in email.split("@")[-1]]
 

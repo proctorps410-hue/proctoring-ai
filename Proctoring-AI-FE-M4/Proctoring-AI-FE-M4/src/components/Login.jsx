@@ -187,7 +187,8 @@ const Login = () => {
       setLoginAttemptId('');
       setLivenessChallengeId('');
       setPoseOrder(null);
-      navigate(examIdFromUrl ? `/exam/${examIdFromUrl}` : '/exam', { replace: true });
+      const nextRoute = examIdFromUrl ? `/exam/${examIdFromUrl}` : '/exam';
+      window.location.replace(nextRoute);
     } catch (err) {
       setStep('idle');
       setLoginAttemptId('');

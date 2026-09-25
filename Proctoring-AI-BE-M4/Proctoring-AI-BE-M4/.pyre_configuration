@@ -1,0 +1,14 @@
+{
+  "site_package_search_strategy": "all",
+  "search_path": [
+    ".",
+    "C:/Users/91959/AppData/Local/Programs/Python/Python39/lib/site-packages"
+  ],
+  "source_directories": [
+    "."
+  ],
+  "python_version": "3.9",
+  "site_roots": [
+    "C:/Users/91959/AppData/Local/Programs/Python/Python39/lib/site-packages"
+  ]
+}

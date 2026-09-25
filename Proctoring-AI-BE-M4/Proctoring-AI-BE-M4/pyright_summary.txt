@@ -1,0 +1,124 @@
+d:\proctoring AI\Proctoring-AI-BE-M4\Proctoring-AI-BE-M4\routers\exam.py - 48 errors
+  1. Invalid conditional operand of type "ColumnElement[bool]"
+┬á┬áMethod __bool__ for type "ColumnElement[bool]" returns type "NoReturn" rather than "bool"
+  2. Invalid conditional operand of type "Column[Any]"
+┬á┬áMethod __bool__ for type "Column[Any]" returns type "NoReturn" rather than "bool"
+  3. Invalid conditional operand of type "Column[bool]"
+┬á┬áMethod __bool__ for type "Column[bool]" returns type "NoReturn" rather than "bool"
+  ... and 45 more
+
+d:\proctoring AI\Proctoring-AI-BE-M4\Proctoring-AI-BE-M4\config\settings.py - 32 errors
+  1. No overloads for "Field" match the provided arguments
+┬á┬áArgument types: (Literal['postgres'], Literal['DB_TYPE'])
+  2. No overloads for "Field" match the provided arguments
+┬á┬áArgument types: (Literal['proctor_user'], Literal['POSTGRES_USER'])
+  3. No overloads for "Field" match the provided arguments
+┬á┬áArgument types: (Literal['secure_password_123'], Literal['POSTGRES_PASSWORD'])
+  ... and 29 more
+
+d:\proctoring AI\Proctoring-AI-BE-M4\Proctoring-AI-BE-M4\routers\auth.py - 17 errors
+  1. Type "Unknown | None" is not assignable to declared type "str"
+┬á┬áType "Unknown | None" is not assignable to type "str"
+┬á┬á┬á┬á"None" is not assignable to "str"
+  2. Invalid conditional operand of type "ColumnElement[bool]"
+┬á┬áMethod __bool__ for type "ColumnElement[bool]" returns type "NoReturn" rather than "bool"
+  3. Cannot assign to attribute "password" for class "User"
+┬á┬áExpression of type "str" cannot be assigned to attribute "password" of class "User"
+┬á┬á┬á┬á"str" is not assignable to "Column[str]"
+  ... and 14 more
+
+d:\proctoring AI\Proctoring-AI-BE-M4\Proctoring-AI-BE-M4\services\cleanup_service.py - 13 errors
+  1. Invalid conditional operand of type "Column[datetime] | ColumnElement[bool]"
+┬á┬áMethod __bool__ for type "Column[datetime]" returns type "NoReturn" rather than "bool"
+┬á┬áMethod __bool__ for type "ColumnElement[bool]" returns type "NoReturn" rather than "bool"
+  2. Argument of type "Column[str]" cannot be assigned to parameter "filename" of type "str" in function "delete_file"
+┬á┬á"Column[str]" is not assignable to "str"
+  3. Invalid conditional operand of type "Column[str] | bool"
+┬á┬áMethod __bool__ for type "Column[str]" returns type "NoReturn" rather than "bool"
+  ... and 10 more
+
+d:\proctoring AI\Proctoring-AI-BE-M4\Proctoring-AI-BE-M4\services\grading_service.py - 13 errors
+  1. Argument of type "int" cannot be assigned to parameter "key" of type "Column[int]" in function "__getitem__"
+┬á┬á"int" is not assignable to "Column[int]"
+  2. Argument of type "Column[str]" cannot be assigned to parameter "question_type" of type "str" in function "grade_question"
+┬á┬á"Column[str]" is not assignable to "str"
+  3. Argument of type "Column[str]" cannot be assigned to parameter "correct_answer" of type "str" in function "grade_question"
+┬á┬á"Column[str]" is not assignable to "str"
+  ... and 10 more
+
+d:\proctoring AI\Proctoring-AI-BE-M4\Proctoring-AI-BE-M4\routers\lti.py - 9 errors
+  1. Argument of type "dict[str, list[dict[str, Unknown]]]" cannot be assigned to parameter "json_data" of type "TJsonData" in function "__init__"
+┬á┬á"dict[str, list[dict[str, Unknown]]]" is not assignable to "Dict[str, List[TIssConf] | TIssConf]"
+┬á┬á┬á┬áType parameter "_VT@dict" is invariant, but "list[dict[str, Unknown]]" is not the same as "List[TIssConf] | TIssConf"
+┬á┬á┬á┬áConsider switching from "dict" to "Mapping" which is covariant in the value type
+  2. No overloads for "update" match the provided arguments
+  3. Argument of type "dict[str, UploadFile | str]" cannot be assigned to parameter "m" of type "Iterable[tuple[str, str]]" in function "update"
+┬á┬á"dict[str, UploadFile | str]" is not assignable to "Iterable[tuple[str, str]]"
+┬á┬á┬á┬áType parameter "_T_co@Iterable" is covariant, but "str" is not a subtype of "tuple[str, str]"
+┬á┬á┬á┬á┬á┬á"str" is not assignable to "tuple[str, str]"
+  ... and 6 more
+
+d:\proctoring AI\Proctoring-AI-BE-M4\Proctoring-AI-BE-M4\utils\image_utils.py - 6 errors
+  1. Type "None" is not assignable to return type "str"
+┬á┬á"None" is not assignable to "str"
+  2. Type "None" is not assignable to return type "ndarray[Unknown, Unknown]"
+┬á┬á"None" is not assignable to "ndarray[Unknown, Unknown]"
+  3. Type "None" is not assignable to return type "ndarray[Unknown, Unknown]"
+┬á┬á"None" is not assignable to "ndarray[Unknown, Unknown]"
+  ... and 3 more
+
+d:\proctoring AI\Proctoring-AI-BE-M4\Proctoring-AI-BE-M4\utils\lti_adapter.py - 3 errors
+  1. Method "get_param" overrides class "Request" in an incompatible manner
+┬á┬áReturn type mismatch: base method returns type "str", override returns type "Any | None"
+┬á┬á┬á┬áType "Any | None" is not assignable to type "str"
+┬á┬á┬á┬á┬á┬á"None" is not assignable to "str"
+  2. Method "set_cookie" overrides class "CookieService" in an incompatible manner
+┬á┬áParameter 3 type mismatch: base parameter is type "str | int", override parameter is type "str"
+┬á┬áParameter 4 type mismatch: base parameter is type "int | None", override parameter is type "int"
+┬á┬á┬á┬áType "str | int" is not assignable to type "str"
+┬á┬á┬á┬á┬á┬á"int" is not assignable to "str"
+┬á┬á┬á┬áType "int | None" is not assignable to type "int"
+┬á┬á┬á┬á┬á┬á"None" is not assignable to "int"
+  3. Method "_get_request_param" overrides class "MessageLaunch" in an incompatible manner
+┬á┬áReturn type mismatch: base method returns type "str", override returns type "str | None"
+┬á┬á┬á┬áType "str | None" is not assignable to type "str"
+┬á┬á┬á┬á┬á┬á"None" is not assignable to "str"
+
+d:\proctoring AI\Proctoring-AI-BE-M4\Proctoring-AI-BE-M4\main.py - 2 errors
+  1. Type "Unknown | None" is not assignable to declared type "str"
+┬á┬áType "Unknown | None" is not assignable to type "str"
+┬á┬á┬á┬á"None" is not assignable to "str"
+  2. Invalid conditional operand of type "ColumnElement[bool]"
+┬á┬áMethod __bool__ for type "ColumnElement[bool]" returns type "NoReturn" rather than "bool"
+
+d:\proctoring AI\Proctoring-AI-BE-M4\Proctoring-AI-BE-M4\services\seb_service.py - 2 errors
+  1. Expression of type "None" cannot be assigned to parameter of type "dict[Unknown, Unknown]"
+┬á┬á"None" is not assignable to "dict[Unknown, Unknown]"
+  2. Cannot access attribute "SEB_config_key" for class "Settings"
+┬á┬áAttribute "SEB_config_key" is unknown
+
+d:\proctoring AI\Proctoring-AI-BE-M4\Proctoring-AI-BE-M4\detection\face_mesh_detection.py - 1 errors
+  1. "face_mesh" is not a known attribute of module "mediapipe.python.solutions"
+
+d:\proctoring AI\Proctoring-AI-BE-M4\Proctoring-AI-BE-M4\detection\face_spoofing.py - 1 errors
+  1. "face_detection" is not a known attribute of module "mediapipe.python.solutions"
+
+d:\proctoring AI\Proctoring-AI-BE-M4\Proctoring-AI-BE-M4\detection\gaze_tracking.py - 1 errors
+  1. "face_mesh" is not a known attribute of module "mediapipe.python.solutions"
+
+d:\proctoring AI\Proctoring-AI-BE-M4\Proctoring-AI-BE-M4\detection\hand_detection.py - 1 errors
+  1. "hands" is not a known attribute of module "mediapipe.python.solutions"
+
+d:\proctoring AI\Proctoring-AI-BE-M4\Proctoring-AI-BE-M4\detection\yolo_detection.py - 1 errors
+  1. "face_detection" is not a known attribute of module "mediapipe.python.solutions"
+
+d:\proctoring AI\Proctoring-AI-BE-M4\Proctoring-AI-BE-M4\scripts\create_tables.py - 1 errors
+  1. "SQLALCHEMY_DATABASE_URL" is unknown import symbol
+
+d:\proctoring AI\Proctoring-AI-BE-M4\Proctoring-AI-BE-M4\services\storage_service.py - 1 errors
+  1. Type "None" is not assignable to return type "str"
+┬á┬á"None" is not assignable to "str"
+
+d:\proctoring AI\Proctoring-AI-BE-M4\Proctoring-AI-BE-M4\src\main.py - 1 errors
+  1. Import "detection.face_detection" could not be resolved
+

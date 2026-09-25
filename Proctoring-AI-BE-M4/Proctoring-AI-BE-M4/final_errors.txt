@@ -1,0 +1,40 @@
+Total issues: 14
+
+storage_service.py - 4 errors
+  - Line 41: Unexpected indentation
+  - Line 68: Unindent not expected
+  - Line 68: Expected expression
+  - Line 68: Statements must be separated by newlines or semicolons
+
+cleanup_service.py - 2 errors
+  - Line 33: Cannot access attribute "delete_file" for class "type[StorageService]"
+┬á┬áAttribute "delete_file" is unknown
+  - Line 70: Cannot access attribute "delete_file" for class "type[StorageService]"
+┬á┬áAttribute "delete_file" is unknown
+
+face_mesh_detection.py - 1 errors
+  - Line 26: "face_mesh" is not a known attribute of module "mediapipe.python.solutions"
+
+face_spoofing.py - 1 errors
+  - Line 38: "face_detection" is not a known attribute of module "mediapipe.python.solutions"
+
+gaze_tracking.py - 1 errors
+  - Line 20: "face_mesh" is not a known attribute of module "mediapipe.python.solutions"
+
+hand_detection.py - 1 errors
+  - Line 7: "hands" is not a known attribute of module "mediapipe.python.solutions"
+
+yolo_detection.py - 1 errors
+  - Line 48: "face_detection" is not a known attribute of module "mediapipe.python.solutions"
+
+exam.py - 1 errors
+  - Line 251: Cannot access attribute "upload_file" for class "type[StorageService]"
+┬á┬áAttribute "upload_file" is unknown
+
+detection_service.py - 1 errors
+  - Line 61: Cannot access attribute "upload_file" for class "type[StorageService]"
+┬á┬áAttribute "upload_file" is unknown
+
+main.py - 1 errors
+  - Line 6: Import "detection.face_detection" could not be resolved
+

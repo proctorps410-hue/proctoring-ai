@@ -1,0 +1,37 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+proctoring.db
+
+# Node / JS
+node_modules/
+dist/
+build/
+.next/
+
+# Logs
+*.log
+_dbg_line.txt
+_policy_snip.txt
+backend_logs.txt
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# IDE / Agent folders
+.agent/
+.cursor/
+.kilo/
+.idea/
+.vscode/
+
+# OS files
+Thumbs.db
+.DS_Store

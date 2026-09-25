@@ -1,0 +1,80 @@
+﻿
+D:\proctoring AI\Proctoring-AI-FE-M4\Proctoring-AI-FE-M4\src\App.jsx
+  13:27  error  'children' is missing in props validation  react/prop-types
+
+D:\proctoring AI\Proctoring-AI-FE-M4\Proctoring-AI-FE-M4\src\components\Dashboard.jsx
+    1:8   error    'React' is defined but never used                                                                                                                                                                                                                                no-unused-vars
+   69:21  error    'setShowScore' is assigned a value but never used                                                                                                                                                                                                                no-unused-vars
+   73:10  error    'examId' is assigned a value but never used                                                                                                                                                                                                                      no-unused-vars
+   73:18  error    'setExamId' is assigned a value but never used                                                                                                                                                                                                                   no-unused-vars
+   76:10  error    'isReady' is assigned a value but never used                                                                                                                                                                                                                     no-unused-vars
+   76:19  error    'setIsReady' is assigned a value but never used                                                                                                                                                                                                                  no-unused-vars
+   77:10  error    'isInitializing' is assigned a value but never used                                                                                                                                                                                                              no-unused-vars
+   78:10  error    'examStarted' is assigned a value but never used                                                                                                                                                                                                                 no-unused-vars
+   78:23  error    'setExamStarted' is assigned a value but never used                                                                                                                                                                                                              no-unused-vars
+   79:10  error    'isVideoReady' is assigned a value but never used                                                                                                                                                                                                                no-unused-vars
+   84:24  error    Promise executor functions should not be async                                                                                                                                                                                                                   no-async-promise-executor
+  244:6   warning  React Hook useEffect has a missing dependency: 'initializeVideo'. Either include it or remove the dependency array                                                                                                                                               react-hooks/exhaustive-deps
+  246:9   error    'handleWebSocketMessage' is assigned a value but never used                                                                                                                                                                                                      no-unused-vars
+  276:6   warning  React Hook useEffect has a missing dependency: 'handleFinishExam'. Either include it or remove the dependency array                                                                                                                                              react-hooks/exhaustive-deps
+  278:9   error    'cleanup' is assigned a value but never used                                                                                                                                                                                                                     no-unused-vars
+  292:9   error    'fetchSummary' is assigned a value but never used                                                                                                                                                                                                                no-unused-vars
+  551:15  warning  The ref value 'wsRef.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'wsRef.current' to a variable inside the effect, and use that variable in the cleanup function        react-hooks/exhaustive-deps
+  554:18  warning  The ref value 'videoRef.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'videoRef.current' to a variable inside the effect, and use that variable in the cleanup function  react-hooks/exhaustive-deps
+
+D:\proctoring AI\Proctoring-AI-FE-M4\Proctoring-AI-FE-M4\src\components\Exam.jsx
+    1:8   error    'React' is defined but never used                                                                                                                                                                                                                                no-unused-vars
+   10:50  error    'incrementTabSwitchCount' is defined but never used                                                                                                                                                                                                              no-unused-vars
+   11:10  error    'incrementCopyPasteCount' is defined but never used                                                                                                                                                                                                              no-unused-vars
+   38:21  error    'setShowScore' is assigned a value but never used                                                                                                                                                                                                                no-unused-vars
+   48:49  error    'screenRecordError' is assigned a value but never used                                                                                                                                                                                                           no-unused-vars
+   49:10  error    'isReady' is assigned a value but never used                                                                                                                                                                                                                     no-unused-vars
+   49:19  error    'setIsReady' is assigned a value but never used                                                                                                                                                                                                                  no-unused-vars
+   50:10  error    'isInitializing' is assigned a value but never used                                                                                                                                                                                                              no-unused-vars
+   52:10  error    'isVideoReady' is assigned a value but never used                                                                                                                                                                                                                no-unused-vars
+  128:11  error    'messages' is assigned a value but never used                                                                                                                                                                                                                    no-unused-vars
+  188:24  error    Promise executor functions should not be async                                                                                                                                                                                                                   no-async-promise-executor
+  335:11  error    'currentQuestions' is assigned a value but never used                                                                                                                                                                                                            no-unused-vars
+  440:6   warning  React Hook useEffect has missing dependencies: 'handleWebSocketMessage', 'initializeVideo', 'routeExamId', 'startRecording', and 'stopRecording'. Either include them or remove the dependency array                                                             react-hooks/exhaustive-deps
+  456:6   warning  React Hook useEffect has a missing dependency: 'handleExamViolation'. Either include it or remove the dependency array                                                                                                                                           react-hooks/exhaustive-deps
+  470:6   warning  React Hook useEffect has a missing dependency: 'handleExamViolation'. Either include it or remove the dependency array                                                                                                                                           react-hooks/exhaustive-deps
+  493:6   warning  React Hook useEffect has a missing dependency: 'handleTimeExpired'. Either include it or remove the dependency array                                                                                                                                             react-hooks/exhaustive-deps
+  551:9   error    'cleanup' is assigned a value but never used                                                                                                                                                                                                                     no-unused-vars
+  566:9   error    'fetchSummary' is assigned a value but never used                                                                                                                                                                                                                no-unused-vars
+  934:15  warning  The ref value 'wsRef.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'wsRef.current' to a variable inside the effect, and use that variable in the cleanup function        react-hooks/exhaustive-deps
+  937:18  warning  The ref value 'videoRef.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'videoRef.current' to a variable inside the effect, and use that variable in the cleanup function  react-hooks/exhaustive-deps
+
+D:\proctoring AI\Proctoring-AI-FE-M4\Proctoring-AI-FE-M4\src\components\LTICallback.jsx
+  1:8   error  'React' is defined but never used        no-unused-vars
+  3:10  error  'authService' is defined but never used  no-unused-vars
+
+D:\proctoring AI\Proctoring-AI-FE-M4\Proctoring-AI-FE-M4\src\components\Login.jsx
+   15:10  error    'showCamera' is assigned a value but never used                                                                no-unused-vars
+   30:6   warning  React Hook React.useEffect has a missing dependency: 'from'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  292:16  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                react/no-unescaped-entities
+
+D:\proctoring AI\Proctoring-AI-FE-M4\Proctoring-AI-FE-M4\src\components\Modal.jsx
+  1:8   error  'React' is defined but never used          no-unused-vars
+  3:18  error  'isOpen' is missing in props validation    react/prop-types
+  3:26  error  'onClose' is missing in props validation   react/prop-types
+  3:35  error  'children' is missing in props validation  react/prop-types
+
+D:\proctoring AI\Proctoring-AI-FE-M4\Proctoring-AI-FE-M4\src\components\Summary.jsx
+   1:8   error  'React' is defined but never used               no-unused-vars
+   5:8   error  'html2canvas' is defined but never used         no-unused-vars
+  13:12  error  'userImage' is assigned a value but never used  no-unused-vars
+
+D:\proctoring AI\Proctoring-AI-FE-M4\Proctoring-AI-FE-M4\src\hooks\useScreenRecorder.js
+  59:6  warning  React Hook useCallback has missing dependencies: 'stopRecording' and 'uploadChunk'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\proctoring AI\Proctoring-AI-FE-M4\Proctoring-AI-FE-M4\src\services\examService.js
+  179:13  error  'authService' is not defined  no-undef
+
+D:\proctoring AI\Proctoring-AI-FE-M4\Proctoring-AI-FE-M4\src\utils\copyPasteTracker.js
+  2:7  error  'COPY_PASTE_LIMIT' is assigned a value but never used  no-unused-vars
+
+D:\proctoring AI\Proctoring-AI-FE-M4\Proctoring-AI-FE-M4\src\utils\tabVisibility.js
+  2:7  error  'TAB_SWITCH_LIMIT' is assigned a value but never used  no-unused-vars
+
+Γ£û 55 problems (43 errors, 12 warnings)
+

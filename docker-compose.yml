@@ -1,0 +1,111 @@
+version: '3.8'
+
+services:
+  # ------------------------------------
+  # 1. Database (PostgreSQL)
+  # ------------------------------------
+  db:
+    image: postgres:15-alpine
+    container_name: proctoring-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "${DATABASE_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # ------------------------------------
+  # 2. Redis (Cache & Session)
+  # ------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: proctoring-redis
+    restart: always
+    ports:
+      - "${REDIS_PORT}:6379"
+
+  # ------------------------------------
+  # 3. Backend (FastAPI)
+  # ------------------------------------
+  backend:
+    build:
+      context: ./Proctoring-AI-BE-M4/Proctoring-AI-BE-M4
+      dockerfile: Dockerfile
+    container_name: proctoring-backend
+    restart: always
+    depends_on:
+      - db
+      - redis
+    ports:
+      - "8080:8000"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      # Explicit variables for Pydantic Settings
+      DB_TYPE: postgres
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      DATABASE_HOST: db
+      DB_HOST: db
+      DATABASE_PORT: 5432
+
+      REDIS_URL: redis://redis:6379/0
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      CORS_ORIGINS: ${CORS_ORIGINS}
+      STUDENT_FRONTEND_URL: ${STUDENT_FRONTEND_URL}
+      ADMIN_FRONTEND_URL: ${ADMIN_FRONTEND_URL}
+      WS_BASE_URL: ${WS_BASE_URL}
+      SEED_DEFAULT_USERS: ${SEED_DEFAULT_USERS}
+      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD}
+      WEB_CONCURRENCY: ${WEB_CONCURRENCY:-2}
+      GUNICORN_TIMEOUT: ${GUNICORN_TIMEOUT:-300}
+      # MinIO Config
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT}
+      MINIO_ACCESS_KEY: ${MINIO_ROOT_USER}
+      MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
+      MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME}
+      MINIO_SECURE: "false"
+    command: >
+      sh -c "gunicorn -w ${WEB_CONCURRENCY:-2} --preload --timeout ${GUNICORN_TIMEOUT:-300} --graceful-timeout 30 -k uvicorn.workers.UvicornWorker main:app --bind 0.0.0.0:8000"
+    mem_limit: 2g
+    volumes:
+      # Mount source code for hot-reloading during dev (optional)
+      - ./Proctoring-AI-BE-M4/Proctoring-AI-BE-M4:/app
+      - logs_data:/app/logs
+
+  # ------------------------------------
+  # 4. Storage (MinIO - Self-hosted S3)
+  # ------------------------------------
+  minio:
+    image: minio/minio
+    container_name: proctoring-storage
+    ports:
+      - "${MINIO_PORT}:9000"
+      - "${MINIO_CONSOLE_PORT}:9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    command: server /data --console-address ":${MINIO_CONSOLE_PORT}"
+    volumes:
+      - minio_data:/data
+
+  # ------------------------------------
+  # 5. Database Viewer (Adminer)
+  # ------------------------------------
+  adminer:
+    image: adminer
+    container_name: proctoring-adminer
+    restart: always
+    ports:
+      - "${ADMINER_PORT}:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+
+volumes:
+  postgres_data:
+  minio_data:
+  logs_data:

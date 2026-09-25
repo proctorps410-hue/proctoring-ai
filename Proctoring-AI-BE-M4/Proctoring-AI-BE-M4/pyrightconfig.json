@@ -1,0 +1,19 @@
+{
+  "pythonVersion": "3.9",
+  "pythonPlatform": "Windows",
+  "venvPath": "",
+  "pythonPath": "C:/Users/91959/AppData/Local/Programs/Python/Python39/python.exe",
+  "extraPaths": [
+    ".",
+    "C:/Users/91959/AppData/Local/Programs/Python/Python39/lib/site-packages"
+  ],
+  "executionEnvironments": [
+    {
+      "root": ".",
+      "extraPaths": [
+        ".",
+        "C:/Users/91959/AppData/Local/Programs/Python/Python39/lib/site-packages"
+      ]
+    }
+  ]
+}

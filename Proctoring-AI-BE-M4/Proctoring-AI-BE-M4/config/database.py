@@ -9,6 +9,13 @@ Base = declarative_base()
 
 def get_database_url():
     """Get database URL based on configuration"""
+    env_db_url = os.getenv("DATABASE_URL") or getattr(settings, "DATABASE_URL", None)
+    if env_db_url and ("postgres" in env_db_url or "mysql" in env_db_url or "sqlite" in env_db_url):
+        if env_db_url.startswith("postgres://"):
+            env_db_url = env_db_url.replace("postgres://", "postgresql://", 1)
+        logger.info("Using DATABASE_URL environment variable for database connection")
+        return env_db_url
+
     if settings.DB_TYPE.lower() == "sqlite":
         logger.info("Using SQLite database")
         return settings.SQLITE_URL

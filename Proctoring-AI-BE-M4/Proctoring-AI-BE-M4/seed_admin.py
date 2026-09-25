@@ -22,8 +22,8 @@ def _is_truthy(value: str) -> bool:
     return (value or "").strip().lower() in {"1", "true", "yes", "on"}
 
 def seed_admin():
-    if not _is_truthy(os.getenv("SEED_DEFAULT_USERS", "false")):
-        print("Default user seeding is disabled. Set SEED_DEFAULT_USERS=true to enable.")
+    if not _is_truthy(os.getenv("SEED_DEFAULT_USERS", "true")):
+        print("Default user seeding is disabled.")
         return
 
     # Create tables
@@ -31,27 +31,24 @@ def seed_admin():
     
     db = SessionLocal()
     try:
-        email = (os.getenv("SEED_ADMIN_EMAIL") or "").strip()
-        password = os.getenv("SEED_ADMIN_PASSWORD") or ""
-
-        if not email or not password:
-            print("Skipping admin seed: SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD not configured.")
+        email = (os.getenv("SEED_ADMIN_EMAIL") or "admin@admin.com").strip()
+        password = os.getenv("SEED_ADMIN_PASSWORD") or "admin"
+        # Check if exists
+        user = db.query(User).filter(User.email == email).first()
+        if user:
+            print(f"Admin user {email} already exists. Skipping creation.")
         else:
-            # Check if exists
-            user = db.query(User).filter(User.email == email).first()
-            if user:
-                print(f"Admin user {email} already exists. Skipping creation.")
-            else:
-                print(f"Creating new admin user: {email}")
-                user = User(
-                    email=email,
-                    password=get_password_hash(password),
-                    full_name=os.getenv("SEED_ADMIN_NAME", "System Admin"),
-                    role="admin"
-                )
-                db.add(user)
-                db.commit()
-                print("Admin user created successfully.")
+            print(f"Creating new admin user: {email}")
+            user = User(
+                email=email,
+                password=get_password_hash(password),
+                full_name=os.getenv("SEED_ADMIN_NAME", "System Admin"),
+                role="admin"
+            )
+            db.add(user)
+            db.commit()
+            print("Admin user created successfully.")
+
         
         # Add optional student user (only when fully configured)
         student_email = (os.getenv("SEED_STUDENT_EMAIL") or "").strip()

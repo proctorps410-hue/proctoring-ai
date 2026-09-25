@@ -65,12 +65,16 @@ EXPOSE 8000
 # IMPORTANT: Multi-worker cold start + model warmup can trigger worker timeouts and cause
 # ERR_EMPTY_RESPONSE in the browser due to worker restarts. Default to 1 worker for stability.
 # You can scale via WEB_CONCURRENCY when running on a machine with enough CPU/RAM.
-# Download YOLOv8n model weights (Git LFS not available in Railway Docker builds,
-# so the COPY above gives us just a pointer file — replace it with the real weights)
+# Download YOLOv8n model weights using the ultralytics package (Git LFS not available
+# in Railway Docker builds, so COPY gives us a pointer file — replace with real weights)
 RUN rm -f /app/yolov8n.pt \
-    && curl -L --retry 5 --retry-all-errors --connect-timeout 30 \
-         -o /app/yolov8n.pt \
-         https://github.com/ultralytics/assets/releases/download/v8.2.0/yolov8n.pt \
-    && python -c "import torch; torch.load('/app/yolov8n.pt', map_location='cpu'); print('yolov8n.pt verified OK')"
+    && python -c "\
+from ultralytics import YOLO; \
+import shutil, os; \
+m = YOLO('yolov8n.pt'); \
+src = getattr(m, 'ckpt_path', None) or str(m.model_name); \
+dst = '/app/yolov8n.pt'; \
+if os.path.abspath(src) != os.path.abspath(dst): shutil.copy(src, dst); \
+print('yolov8n.pt ready at', dst, os.path.getsize(dst), 'bytes')"
 
 CMD ["/bin/sh", "-c", "gunicorn -w ${WEB_CONCURRENCY:-1} --preload --timeout 300 --graceful-timeout 30 -k uvicorn.workers.UvicornWorker main:app --bind 0.0.0.0:${PORT:-8080}"]

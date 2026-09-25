@@ -51,6 +51,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 SUPPORTED_IMAGE_TYPES = {"image/jpeg", "image/png"}
 FACE_VERIFY_TIMEOUT_SEC = int(getattr(settings, "PROCTOR_FACE_VERIFY_TIMEOUT_SEC", 120) or 120)
+LOGIN_IMAGE_COLLECTION_TIMEOUT_SEC = FACE_VERIFY_TIMEOUT_SEC
 
 
 def _read_upload_image_or_400(image: UploadFile, field_name: str) -> bytes:
@@ -851,7 +852,7 @@ async def login_password_face(
     try:
         fresh_reference_payloads = await asyncio.wait_for(
             _collect_login_images(image_front),
-            timeout=30,
+            timeout=LOGIN_IMAGE_COLLECTION_TIMEOUT_SEC,
         )
     except asyncio.TimeoutError:
         logger.error("Login image collection timed out for user_id=%s", user.id)

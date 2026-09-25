@@ -9,10 +9,10 @@ from utils.face_reference_utils import analyze_identity_frame_bytes
 from utils.logger import logger
 
 # ---------------------------------------------------------------------------
-# Model configuration — Facenet512 is more robust than VGG-Face for
-# cross-condition matching (lighting changes, slight angle, expression diff).
+# Model configuration — OpenFace is substantially lighter than Facenet512 and
+# keeps password+face login within acceptable latency for real-time student sign-in.
 # ---------------------------------------------------------------------------
-_FACE_MODEL = os.getenv("PROCTOR_FACE_MODEL", "Facenet512")
+_FACE_MODEL = os.getenv("PROCTOR_FACE_MODEL", "OpenFace")
 _FACE_THRESHOLD = float(os.getenv("PROCTOR_FACE_THRESHOLD", "0.70"))
 _FACE_SOFT_THRESHOLD = float(os.getenv("PROCTOR_FACE_SOFT_THRESHOLD", "0.55"))
 
@@ -131,7 +131,17 @@ def verify_face_against_references(
     comparable_matches: List[Dict[str, Any]] = []
     failures: List[str] = []
 
-    for reference in reference_records:
+    # For login verification, prioritize the front-facing reference and stop early
+    # once we find a very strong match. This avoids serial DeepFace comparisons
+    # against every side pose when a single front image is enough to confirm identity.
+    priority_records = [
+        reference for reference in reference_records
+        if str(reference.get("pose", "front")).lower() == "front"
+    ]
+    if not priority_records:
+        priority_records = reference_records
+
+    for reference in priority_records:
         reference_image = reference.get("image")
         if not reference_image:
             continue
@@ -152,6 +162,8 @@ def verify_face_against_references(
                     "result": result,
                 }
             )
+            if bool(match) and float(result.get("confidence", 0.0)) >= 90.0:
+                break
         else:
             failures.append(str(result))
 

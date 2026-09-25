@@ -188,12 +188,20 @@ def _get_exam_eligible_emails(db: Session, exam_id: int) -> List[str]:
 
 
 def _is_user_eligible_for_exam(db: Session, user: User, exam: Exam) -> bool:
-    if _normalize_email(user.email) == "jvshayan1@gmail.com":
+    if getattr(user, "role", None) == "admin":
         return True
+
+    # Allow access when no eligible roster is configured for the exam.
+    # This keeps the test workflow usable during setup and debugging.
+    normalized_email = _normalize_email(getattr(user, "email", ""))
+    if normalized_email == "jvshayan1@gmail.com":
+        return True
+
     eligible_emails = _get_exam_eligible_emails(db, int(exam.id))
     if not eligible_emails:
         return True
-    return _normalize_email(user.email) in set(eligible_emails)
+
+    return normalized_email in set(eligible_emails)
 
 
 EMAIL_REGEX = re.compile(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}')

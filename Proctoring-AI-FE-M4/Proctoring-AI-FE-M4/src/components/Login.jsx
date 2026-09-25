@@ -173,7 +173,6 @@ const Login = () => {
     }
 
     setFaceOpen(false);
-    setStep('verifying');
     setError('');
     try {
       await authService.loginWithPasswordAndFace({
@@ -184,7 +183,7 @@ const Login = () => {
         imageFront: frontBlob,
       });
       setStep('done');
-      setTimeout(() => navigate(examIdFromUrl ? `/exam/${examIdFromUrl}` : '/exam', { replace: true }), 600);
+      setTimeout(() => navigate(examIdFromUrl ? `/exam/${examIdFromUrl}` : '/exam', { replace: true }), 200);
     } catch (err) {
       setStep('idle');
       setLoginAttemptId('');

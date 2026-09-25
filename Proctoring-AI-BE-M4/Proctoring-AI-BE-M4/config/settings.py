@@ -13,8 +13,13 @@ def generate_secret_key():
     return os.getenv("JWT_SECRET_KEY") or secrets.token_hex(64)
 
 def parse_csv_env(value: Union[str, List[str], None]) -> List[str]:
+    if value is None:
+        return []
+
     if isinstance(value, list):
         return [str(item).strip() for item in value if str(item).strip()]
+
+    raw = str(value).strip()
 
     # Strip quotes and any accidental linebreaks from Railway env editors
     raw = raw.strip('"\'').replace("\r", "").replace("\n", "").strip()
@@ -31,7 +36,7 @@ def parse_csv_env(value: Union[str, List[str], None]) -> List[str]:
         except json.JSONDecodeError:
             pass
 
-    return [item.strip() for item in raw.split(",") if item.strip()]
+    return [item.strip().strip('"\'') for item in raw.split(",") if item.strip()]
 
 
 class Settings(BaseSettings):

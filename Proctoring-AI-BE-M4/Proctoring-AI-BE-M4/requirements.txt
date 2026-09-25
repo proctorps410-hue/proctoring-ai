@@ -23,7 +23,8 @@ pydantic-settings>=2.0.3
 
 # ML/CV dependencies
 ultralytics>=8.0.0,<9.0.0
-opencv-python-headless==4.10.0.84  # Updated to match Roboflow requirement
+opencv-python>=4.8.0
+
 mediapipe==0.10.5
 torch>=2.0.1
 torchvision>=0.15.2

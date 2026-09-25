@@ -42,8 +42,7 @@ RUN pip install --no-cache-dir fire
 COPY requirements.txt .
 RUN pip install --no-cache-dir --default-timeout=1000 -r requirements.txt
 
-# Ensure clean opencv-python-headless without dual opencv-python conflict
-RUN pip uninstall -y opencv-python 2>/dev/null || true
+
 
 
 # Copy the rest of the application
@@ -74,7 +73,10 @@ EXPOSE 8000
 # Download YOLOv8n model weights using the ultralytics package (Git LFS not available
 # in Railway Docker builds, so COPY gives us a pointer file — replace with real weights)
 RUN rm -f /app/yolov8n.pt \
-    && python -c "from ultralytics import YOLO; YOLO('yolov8n.pt')"
+    && curl -L --retry 10 --retry-all-errors --connect-timeout 30 \
+         -o /app/yolov8n.pt \
+         https://github.com/ultralytics/assets/releases/download/v8.3.0/yolov8n.pt \
+    && python -c "import os; s=os.path.getsize('/app/yolov8n.pt'); assert s>6000000, f'weights too small: {s}'; print('yolov8n.pt ready:', s, 'bytes')"
 
 
 CMD ["/bin/sh", "-c", "gunicorn -w ${WEB_CONCURRENCY:-1} --preload --timeout 300 --graceful-timeout 30 -k uvicorn.workers.UvicornWorker main:app --bind 0.0.0.0:${PORT:-8080}"]

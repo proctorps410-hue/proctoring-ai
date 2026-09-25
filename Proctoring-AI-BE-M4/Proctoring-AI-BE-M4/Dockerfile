@@ -24,7 +24,10 @@ RUN apt-get update -o Acquire::Retries=5 && apt-get install -y --no-install-reco
 
 
 # Install python dependencies
-# Install heavy dependencies first (Torch, TensorFlow) to use caching and prevent timeouts
+# 1. Pin numpy 1.x first so Torch, TensorFlow, and OpenCV all build against the identical C-API ABI
+RUN pip install --no-cache-dir --default-timeout=1000 "numpy>=1.25.0,<2.0.0"
+
+# Install heavy dependencies (Torch, TensorFlow) using the pinned numpy
 RUN pip install --no-cache-dir --default-timeout=1000 --index-url https://download.pytorch.org/whl/cpu --extra-index-url https://pypi.org/simple torch>=2.0.1 torchvision>=0.15.2
 
 RUN pip install --no-cache-dir --default-timeout=1000 tensorflow-cpu==2.15.0 tf-keras==2.15.0 keras>=2.15.0
@@ -36,9 +39,12 @@ RUN pip install --no-cache-dir --default-timeout=1000 --no-deps deepface==0.0.79
 RUN pip install --no-cache-dir fire
 
 # Install remaining python dependencies
-# Copy requirements file (now, so heavy deps above are cached)
 COPY requirements.txt .
 RUN pip install --no-cache-dir --default-timeout=1000 -r requirements.txt
+
+# Ensure clean opencv-python-headless without dual opencv-python conflict
+RUN pip uninstall -y opencv-python 2>/dev/null || true
+
 
 # Copy the rest of the application
 COPY . .

@@ -14,6 +14,7 @@ import {
   Upload,
 } from 'lucide-react';
 import api from '../services/api';
+import * as XLSX from 'xlsx';
 
 type QuestionType = 'Multiple Choice' | 'True/False' | 'Short Answer';
 type BannerTone = 'success' | 'error' | 'info';
@@ -378,12 +379,47 @@ export function ExamCreator() {
 
     setIsImportingRoster(true);
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-      const response = await api.post<EligibleRosterImportResponse>('exam/admin/exam/eligible-emails/import', formData);
-      const emails = Array.isArray(response.data?.emails)
-        ? response.data.emails.map((value) => String(value).trim()).filter(Boolean)
-        : [];
+      let emails: string[] = [];
+
+      // 1. Instant client-side parsing using XLSX library (works for both .xlsx and .csv in browser)
+      try {
+        const buffer = await file.arrayBuffer();
+        const wb = XLSX.read(buffer, { type: 'array' });
+        const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+        const set = new Set<string>();
+
+        for (const sheetName of wb.SheetNames) {
+          const ws = wb.Sheets[sheetName];
+          const data = XLSX.utils.sheet_to_json<unknown[]>(ws, { header: 1, defval: '' });
+          for (const row of data) {
+            if (Array.isArray(row)) {
+              for (const cell of row) {
+                const matches = String(cell || '').match(emailRegex);
+                if (matches) {
+                  matches.forEach((e) => set.add(e.toLowerCase().trim()));
+                }
+              }
+            }
+          }
+        }
+        emails = Array.from(set);
+      } catch (clientErr) {
+        console.warn('Client-side roster parse fallback:', clientErr);
+      }
+
+      // 2. Fallback to backend API if client parsing found nothing
+      if (emails.length === 0) {
+        try {
+          const formData = new FormData();
+          formData.append('file', file);
+          const response = await api.post<EligibleRosterImportResponse>('exam/admin/exam/eligible-emails/import', formData);
+          emails = Array.isArray(response.data?.emails)
+            ? response.data.emails.map((value) => String(value).trim()).filter(Boolean)
+            : [];
+        } catch {
+          // If backend also fails, error handled below
+        }
+      }
 
       if (emails.length === 0) {
         setBanner({ tone: 'error', message: 'No valid student email IDs were found in the uploaded roster.' });
@@ -391,10 +427,10 @@ export function ExamCreator() {
       }
 
       setEligibleEmails(emails);
-      setRosterFileName(response.data?.file_name || file.name);
+      setRosterFileName(file.name);
       setBanner({
         tone: 'success',
-        message: `Imported ${emails.length} eligible student email ID(s) from ${response.data?.file_name || file.name}.`,
+        message: `Imported ${emails.length} eligible student email ID(s) from ${file.name}.`,
       });
     } catch (error: unknown) {
       const detail = (error as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
